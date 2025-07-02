@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
+import bgImage from './background.jpg';
+import html2pdf from 'html2pdf.js';
+import PDFTemplate from './components/PDFTemplate';
+import { createRoot } from 'react-dom/client';
+import MultiChoiceCard from './components/MultiChoiceCard';
+//import QuoteTemplate from './components/QuoteTemplate';
 
 const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
 
@@ -60,15 +66,35 @@ function App() {
     if(topic === 'B Y Porto'){
       setIsByProtoOpen(true);
       setActiveModule(null);
-      return;
+      //return;
     }
-    setIsByProtoOpen(false);
-    setMessages([{ sender: "agent", text: `👋 Welcome to the ${topic} module! How can I assist you?` }]);
-    setActiveModule(topic);
+    else{
+      setIsByProtoOpen(false);
+      setMessages([{ sender: "agent", text: `👋 Welcome to the ${topic} module! How can I assist you?` }]);
+      setActiveModule(topic);
+      setCompletedSteps((prev) => [...new Set([...prev, topic])]);
+    }
+    
     setSessionId(null);
     const newSessionId = await createSession(topic);
     setSessionId(newSessionId);
-    setCompletedSteps((prev) => [...new Set([...prev, topic])]);
+    if (topic === "Product Configuration") {
+      setTimeout(() => {
+        setMessages(prev => [
+          ...prev,
+          {
+            sender: "agent",
+            text: "Choose a material for the product:",
+            multipleChoice: true,
+            options: [
+              { label: "Plastic", image: "" },
+              { label: "Metal", image: "" },
+              { label: "Wood", icon: "" }
+            ]
+          }
+        ]);
+      }, 500); // delay so it appears after welcome message
+    }
   };
 
   const sendMessage = async (e) => {
@@ -133,9 +159,104 @@ function App() {
 
   };
 
+  const handlePDFDownload = () => {
+  const pdfData = {
+    customerName: "Customer Name",
+    customerAddress: "1234 Customer St, Customer Town, ST 12345",
+    quoteNo: "0000226",
+    quoteDate: "11-04-2023",
+    dueDate: "25-04-2023",
+    items: [
+      {
+        qty: 1,
+        description: "Replacement of spark plugs",
+        unitPrice: 40.00
+      },
+      {
+        qty: 2,
+        description: "Brake pad replacement (front)",
+        unitPrice: 40.00
+      },
+      {
+        qty: 4,
+        description: "Wheel alignment",
+        unitPrice: 17.50
+      },
+      {
+        qty: 1,
+        description: "Oil change and filter replacement",
+        unitPrice: 40.00
+      }
+    ],
+    subtotal: 230.00,
+    tax: 11.50,
+    total: 241.50
+  };
+
+  /*const pdfData = {
+    quotationNo: '004',
+    quotationDate: 'June 19, 2019',
+    logo: '/logo.png', // Path to your logo image
+    from: {
+      companyName: 'Foobar Labs',
+      address: '52-69 HSR Layout, 3rd Floor Orion mall, Bengaluru, Karnataka, India - 560055',
+      pan: 'ABCDE1234F'
+    },
+    to: {
+      companyName: 'Studio Den',
+      address: '305, 3rd Floor Orion mall, Bengaluru, Karnataka, India - 560055',
+      pan: 'ABCDE1234F'
+    },
+    placeOfSupply: 'Karnataka',
+    countryOfSupply: 'India',
+    items: [
+      { description: 'Basic Web Development', qty: 1, rate: 10000 },
+      { description: 'Logo Design', qty: 1, rate: 1000 },
+      { description: 'Web Design', qty: 1, rate: 5000 },
+      { description: 'Full Stack Web development', qty: 1, rate: 40000 },
+    ],
+    subtotal: 101000,
+    discountPercent: 5,
+    discountAmount: 5050,
+    total: 95950,
+    totalInWords: 'Ninety Thousand Nine Hundred Fifty Rupees Only',
+    terms: [
+      'Please pay within 15 days from the date of invoice, overdue interest @ 14% will be charged on delayed payments.',
+      'Please quote invoice number when remitting funds.'
+    ],
+    notes: 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.',
+    contactEmail: 'info@foobarlabs.com',
+    contactPhone: '+91-98765-43210',
+    signature: '/signature.png' // Path to signature image
+  };*/
+
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+
+  root.render(<PDFTemplate data={pdfData} />);
+
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0.5,
+        filename: 'Quotation.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+      })
+      .from(container)
+      .save()
+      .then(() => {
+        root.unmount();
+        document.body.removeChild(container);
+      });
+  }, 100);
+};
+
   return (
-    <div className="app-wrapper">
-      <h1 className="title">3D Printing Modules</h1>
+    <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
+      <h1 className="title">WednesdAI 3D Labs</h1>
       <div className="module-grid">
         {topics.map((name, index) => (
           <div key={name} className="module-card-container">
@@ -227,6 +348,12 @@ function App() {
                   >
                     Show Suggestions
                   </button>
+                  {/*<button
+                    className="open-editor-btn"
+                    onClick={handlePDFDownload}
+                  >
+                    📄 Download Design PDF
+                  </button>*/}
                 </div>
               </div>
             </div>
@@ -241,7 +368,7 @@ function App() {
               <h2>{activeModule} Assistant</h2>
               <button onClick={() => setActiveModule(null)} className="close-btn">×</button>
             </div>
-            <div className="chat-body">
+            {/*<div className="chat-body">
               {messages.map((msg, i) => (
                 <div key={i} className={`chat-message ${msg.sender}`}>
                   {msg.isLoading ? (
@@ -252,7 +379,34 @@ function App() {
                 </div>
               ))}
               <div ref={chatEndRef}></div>
-            </div>
+            </div>*/}
+            <div className="chat-body">
+              {messages.map((msg, i) => (
+                <div key={i} className={`chat-message ${msg.sender}`}>
+                  {msg.isLoading ? (
+                    <div className="typing-indicator"><span></span><span></span><span></span></div>
+                  ) : msg.sender === 'agent' && msg.multipleChoice && activeModule === 'Product Configuration' ? (
+                    <MultiChoiceCard
+                    text={msg.text}
+                    options={msg.options}
+                    onSelect={(option) => {
+                      const userMsg = { sender: "user", text: option.label };
+                      const loadingMsg = { sender: "agent", text: "...", isLoading: true };
+                      setMessages((prev) => [...prev, userMsg, loadingMsg]);
+
+                      sendMessageToSession(sessionId, option.label).then((resText) => {
+                        setMessages((prev) => [...prev.slice(0, -1), { sender: 'agent', text: resText }]);
+                      });
+                    }}
+                  />
+                ) : (
+                  <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
+                )}
+              </div>
+            ))}
+            <div ref={chatEndRef}></div>
+          </div>
+
             <form className="chat-input" onSubmit={sendMessage}>
               <input
                 type="text"

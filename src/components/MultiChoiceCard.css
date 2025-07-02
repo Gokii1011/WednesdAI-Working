@@ -1,0 +1,51 @@
+.multi-msg-wrapper {
+  padding: 10px 14px;
+  background: #f0f4ff;
+  border-radius: 12px;
+  max-width: 90%;
+  margin: 8px 0;
+}
+
+.agent-question {
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.multi-choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.multi-choice-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.multi-choice-card:hover {
+  background-color: #eaf0ff;
+  border-color: #007bff;
+}
+
+.multi-choice-img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.multi-choice-icon {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.multi-choice-label {
+  font-size: 14px;
+}

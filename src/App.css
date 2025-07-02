@@ -5,13 +5,18 @@ body {
 }
 
 .app-wrapper {
-  padding: 100px 20px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  padding: 20px;
   text-align: center;
 }
 
 .title {
   font-size: 28px;
   margin-bottom: 30px;
+  color:white;
 }
 
 /* Bigger module cards, 2 per row on desktop */
@@ -444,3 +449,4 @@ body {
   70% { box-shadow: 0 0 0 30px rgba(213, 0, 0, 0); }
   100% { box-shadow: 0 0 0 0 rgba(213, 0, 0, 0); }
 }
+
