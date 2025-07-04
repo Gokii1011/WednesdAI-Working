@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
-import bgImage from './background.jpg';
+import bgImage from './IMG_8657.jpg';
 import html2pdf from 'html2pdf.js';
 import PDFTemplate from './components/PDFTemplate';
 import { createRoot } from 'react-dom/client';
@@ -8,7 +8,6 @@ import MultiChoiceCard from './components/MultiChoiceCard';
 //import QuoteTemplate from './components/QuoteTemplate';
 
 const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
-
 function App() {
   const [activeModule, setActiveModule] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -254,22 +253,73 @@ function App() {
   }, 100);
 };
 
+
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
       <h1 className="title">WednesdAI 3D Labs</h1>
-      <div className="module-grid">
-        {topics.map((name, index) => (
-          <div key={name} className="module-card-container">
-            <div
-              className={`module-card ${completedSteps.includes(name) ? 'completed' : ''}`}
-              onClick={() => handleTopicClick(name)}
-            >
-              <div className="icon-circle" />
-              <p>{name}</p>
-            </div>
-            {index < topics.length - 1 && <div className="route-line" />}
+       <div className="module-layer">
+        {/* WednesdAI */}
+        <div
+          className="module-card-container"
+          style={{ top: "12%", left: "15%" }}
+          onClick={() => handleTopicClick("WednesdAI")}
+        >
+          <div
+            className={`module-card ${
+              completedSteps.includes("WednesdAI") ? "completed" : ""
+            }`}
+          >
+            <p>WednesdAI</p>
           </div>
-        ))}
+        </div>
+
+        {/* B Y Porto */}
+        <div
+          className="module-card-container"
+          style={{ top: "71%", left: "17%" }}
+          onClick={() => handleTopicClick("B Y Porto")}
+        >
+          <div
+            className={`module-card ${
+              completedSteps.includes("B Y Porto") ? "completed" : ""
+            }`}
+          >
+            <p>B&nbsp;Y&nbsp;Porto</p>
+          </div>
+        </div>
+
+        {/* Product Configuration */}
+        <div
+          className="module-card-container"
+          style={{ top: "32%", left: "63%" }}
+          onClick={() => handleTopicClick("Product Configuration")}
+        >
+          <div
+            className={`module-card ${
+              completedSteps.includes("Product Configuration")
+                ? "completed"
+                : ""
+            }`}
+          >
+           { /*<div className="icon-circle">*/}
+            <p>Product<br />Configuration</p>
+          </div>
+        </div>
+
+        {/* cafe */}
+        <div
+          className="module-card-container"
+          style={{ top: "75%", left: "75%" }}
+          onClick={() => handleTopicClick("cafe")}
+        >
+          <div
+            className={`module-card ${
+              completedSteps.includes("cafe") ? "completed" : ""
+            }`}
+          >
+            <p>cafe</p>
+          </div>
+        </div>
       </div>
 
       {isByProtoOpen && (

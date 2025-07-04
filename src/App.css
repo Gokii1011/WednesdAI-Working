@@ -14,9 +14,10 @@ body {
 }
 
 .title {
-  font-size: 28px;
+  font-size: 55px;
+  font-weight: bold;
   margin-bottom: 30px;
-  color:white;
+  color:black
 }
 
 /* Bigger module cards, 2 per row on desktop */
@@ -29,21 +30,27 @@ body {
 }
 
 .module-card {
-  background-color: #feffdc;
+  background: rgba(144, 238, 144, 0.4); /* light green with transparency */
+  backdrop-filter: blur(4px);
   border-radius: 50%;
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: 0.2s ease;
+}
+/* a little brighter on hover so it feels clickable */
+.module-card:hover {
+  background: rgba(254, 255, 220, 0.65);
+  transform: scale(1.08);
 }
 
-.module-card:hover {
-  transform: scale(1.05);
+/* keep the “completed” state visible */
+.module-card.completed {
+  background: rgba(144, 238, 144, 0.6);   /* light‑green tint 60 % */
 }
 
 .icon-circle {
@@ -71,6 +78,39 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+.module-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.module-card-container {
+  position: absolute;
+}
+
+.module-card-container.wednesdai {
+  top: 80px;
+  left: 250px;
+}
+
+.module-card-container.b-y-porto {
+  top: 80px;
+  left: 750px;
+}
+
+.module-card-container.product-configuration {
+  top: 80px;
+  left: 1250px;
+}
+
+.module-card-container.cafe {
+  top: 80px;
+  left: 1650px;
 }
 
 .chat-box-window {
