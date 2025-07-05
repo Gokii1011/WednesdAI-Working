@@ -6,7 +6,8 @@ const app = express();
 app.use(cors()); // allow all origins for now
 app.use(express.json());
 
-const SALESFORCE_ACCESS_TOKEN = 'eyJ0bmsiOiJjb3JlL3Byb2QvMDBESG8wMDAwMDdFWFNWTUE0IiwidmVyIjoiMS4wIiwia2lkIjoiQ09SRV9BVEpXVC4wMERIbzAwMDAwN0VYU1YuMTc1MDI2MjIxNTMwNSIsInR0eSI6InNmZGMtY29yZS10b2tlbiIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzY3AiOiJzZmFwX2FwaSBjaGF0Ym90X2FwaSBhcGkiLCJzdWIiOiJ1aWQ6MDA1SG8wMDAwMDkzZlJxSUFJIiwicm9sZXMiOltdLCJpc3MiOiJodHRwczovL2luMTc1MDI1NzIyOTIyMy5teS5zYWxlc2ZvcmNlLmNvbSIsImNsaWVudF9pZCI6IjNNVkc5UnIwRVoyWU9WTWFVaWlNMl81TzlMem5PUmc2TVZMRk9QbFZxaElTLnNGYVpEUzRRbDBRa0xfWUloNGVsci51QW5sSE40RGV1MzFXUFh2X00iLCJjZHBfdGVuYW50IjoiYTM2MC9wcm9kLzQ3NjdkMjIwZGUxMDRiYzBhODlkNGFiNzM5ZGJjNmU0IiwiYXVkIjpbImh0dHBzOi8vYXBpLnNhbGVzZm9yY2UuY29tIiwiaHR0cHM6Ly9pbjE3NTAyNTcyMjkyMjMubXkuc2FsZXNmb3JjZS5jb20iXSwibmJmIjoxNzUxMzg3MDE0LCJtdHkiOiJvYXV0aCIsInNmYXBfcmgiOiJib3Qtc3ZjLWxsbTphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixib3Qtc3ZjLWxsbS9GbG93R3B0OmF3cy1wcm9kMS11c2Vhc3QxL2VpbnN0ZWluLGJvdC1zdmMtbGxtL0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbixlaW5zdGVpbi10cmFuc2NyaWJlL0VpbnN0ZWluR1BUOmF3cy1wcm9kOC1jYWNlbnRyYWwxL2VpbnN0ZWluLG12cy9FREM6YXdzLXByb2QxLXVzZWFzdDEvZWluc3RlaW4sZWluc3RlaW4tYWktZ2F0ZXdheS9FaW5zdGVpbkdQVDphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixlaW5zdGVpbi1haS1nYXRld2F5L0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbiIsInNmaSI6ImI1MDVjNGZmYzE4ZDdhMjdiMmVkNzkzMWFlZmU2ZGU2M2E4OTM4YmUzMzRhNTNiZDgyMjAzYjczN2IxMDg2NGIiLCJzZmFwX29wIjoiRWluc3RlaW5IYXdraW5nQzJDRW5hYmxlZCxFR3B0Rm9yRGV2c0F2YWlsYWJsZSxFaW5zdGVpbkdlbmVyYXRpdmVTZXJ2aWNlLFRhYmxlYXVNZXRyaWNCYXNpY3MsU2FsZXNmb3JjZUNvbmZpZ3VyYXRvckVuZ2luZSIsImhzYyI6ZmFsc2UsImNkcF91cmwiOiJodHRwczovL2EzNjAuY2RwLmNkcDMuYXdzLXByb2QxLXVzZWFzdDEuYXdzLnNmZGMuY2wiLCJleHAiOjE3NTEzODg4MjksImlhdCI6MTc1MTM4NzAyOX0.57kGvrde6lG1s0g_nx2R2GApJWvUDoM_B0tmS0zqFDtCgd9LKUmD21X1i_WCKEXqUzUBbkL0LTTL5UogfB61gt7Q2JpxUs7ZMEWFej8ddQ-jfbOteyaKdRblaYF7KFnzP1ZFQ-QdGiAQ33zgEe8fW8f3_ZLEPGEgFfCaZjqRT7ffYokbiQbu0aLgIUMZWTatCswcAxgQDOQPz4S1sMot5OmB8FLJKWlrnoi23RCjo4wSgPkoE19teoSUkpbGnCIROcXFqqK5GZZg7FfuVBgyBMd7XAn_saYCAme7trRr3xm5ztvzWdFjC_uNC-rtG-TzbZ_3XnDENFD2fiIuQdol6A'
+const SALESFORCE_ACCESS_TOKEN = 'eyJ0bmsiOiJjb3JlL3Byb2QvMDBESG8wMDAwMDdFWFNWTUE0IiwidmVyIjoiMS4wIiwia2lkIjoiQ09SRV9BVEpXVC4wMERIbzAwMDAwN0VYU1YuMTc1MDI2MjIxNTMwNSIsInR0eSI6InNmZGMtY29yZS10b2tlbiIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzY3AiOiJzZmFwX2FwaSBjaGF0Ym90X2FwaSBhcGkiLCJzdWIiOiJ1aWQ6MDA1SG8wMDAwMDkzZlJxSUFJIiwicm9sZXMiOltdLCJpc3MiOiJodHRwczovL2luMTc1MDI1NzIyOTIyMy5teS5zYWxlc2ZvcmNlLmNvbSIsImNsaWVudF9pZCI6IjNNVkc5UnIwRVoyWU9WTWFVaWlNMl81TzlMem5PUmc2TVZMRk9QbFZxaElTLnNGYVpEUzRRbDBRa0xfWUloNGVsci51QW5sSE40RGV1MzFXUFh2X00iLCJjZHBfdGVuYW50IjoiYTM2MC9wcm9kLzQ3NjdkMjIwZGUxMDRiYzBhODlkNGFiNzM5ZGJjNmU0IiwiYXVkIjpbImh0dHBzOi8vaW4xNzUwMjU3MjI5MjIzLm15LnNhbGVzZm9yY2UuY29tIiwiaHR0cHM6Ly9hcGkuc2FsZXNmb3JjZS5jb20iXSwibmJmIjoxNzUxNzI0ODg3LCJtdHkiOiJvYXV0aCIsInNmYXBfcmgiOiJib3Qtc3ZjLWxsbTphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixib3Qtc3ZjLWxsbS9GbG93R3B0OmF3cy1wcm9kMS11c2Vhc3QxL2VpbnN0ZWluLGJvdC1zdmMtbGxtL0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbixlaW5zdGVpbi10cmFuc2NyaWJlL0VpbnN0ZWluR1BUOmF3cy1wcm9kOC1jYWNlbnRyYWwxL2VpbnN0ZWluLG12cy9FREM6YXdzLXByb2QxLXVzZWFzdDEvZWluc3RlaW4sZWluc3RlaW4tYWktZ2F0ZXdheS9FaW5zdGVpbkdQVDphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixlaW5zdGVpbi1haS1nYXRld2F5L0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbiIsInNmaSI6IjgxYTViNzFkMmUyYTBjZGEwNTViN2EwNmRlOWYwNWIyM2YyZGJlOWE2OGQ3NTY1NTM3MTM5Yzg0M2JhMDI3ZTEiLCJzZmFwX29wIjoiRWluc3RlaW5IYXdraW5nQzJDRW5hYmxlZCxFR3B0Rm9yRGV2c0F2YWlsYWJsZSxFaW5zdGVpbkdlbmVyYXRpdmVTZXJ2aWNlLFRhYmxlYXVNZXRyaWNCYXNpY3MsU2FsZXNmb3JjZUNvbmZpZ3VyYXRvckVuZ2luZSIsImhzYyI6ZmFsc2UsImNkcF91cmwiOiJodHRwczovL2EzNjAuY2RwLmNkcDMuYXdzLXByb2QxLXVzZWFzdDEuYXdzLnNmZGMuY2wiLCJleHAiOjE3NTE3MjY3MDIsImlhdCI6MTc1MTcyNDkwMn0.sYwCEadTJVbq_1RGgvdCZRyVpNJ0RKWipaNK9wBjZdXqfI52mVKe2FosH1WVcTaM39AzlbYgT1Qlzgyh37tmkVQ18oLoA1euY0DHxn5gk59INXrhqPk8rE92E68eo_pY7sBZ0UHy16vII4lnzuBp05dfanrdLAjswMxCvoR2REcCn9UVySespt21JCLTqfTs_mOmIpNTpVNU1aA73jioGMPw4JU-rHKSn3B0NCuNXiCIqe9IT1IQjYhm2u7mEi5ggOyXlXfoYdN_k4xYen-lPHDdUv7vJXGz5WXm4-ALrVfG6gNEEXOw6mngMWbjh8O38Npustog8mCEYQU8_R3dWw'
+const BASE_URL_TEMPLATE = 'https://in1750257229223.my.salesforce.com';
 const AGENT_ENDPOINT = 'https://api.salesforce.com/einstein/ai-agent/v1/agents/0XxHo0000011VDGKA2/sessions';
 
 
@@ -49,6 +50,7 @@ function getAgentIdByCondition(condition) {
 app.post('/create-session', async (req, res) => {
   try {
     const { topic } = req.body;
+    console.log(topic);
     const agentId = getAgentIdByCondition(topic);
 
     const body = JSON.stringify({
@@ -82,6 +84,7 @@ app.post('/create-session', async (req, res) => {
 
 // Step 2: Send message to session
 app.post('/session/:sessionId/message', async (req, res) => {
+  console.log('Body' + req.body)
   const sessionId = req.params.sessionId;
   try {
     const response = await fetch(`${BASE_URL}/sessions/${sessionId}/messages`, {
@@ -101,6 +104,45 @@ app.post('/session/:sessionId/message', async (req, res) => {
     res.status(500).json({ error: 'Failed to send message' });
   }
 });
+
+
+app.post('/call-template', async (req, res) => {
+  try {
+    console.log('called');
+    console.log(req.body);
+    // const body = JSON.stringify({
+    //       isPreview: false,
+    //       inputParams:{
+    //           valueMap:{
+    //             "Input:userQuery" : {
+    //               value : 'Hii'
+    //             }
+    //           }
+    //       },
+    //       additionalConfig:{
+    //         numGenerations: '1',
+    //         temperature: '0.0',
+    //         applicationName: 'PromptTemplateGenerationsInvocable'
+    //       }
+    //   });
+
+    const response = await fetch(`${BASE_URL_TEMPLATE}/services/data/v64.0/einstein/prompt-templates/Return_Relevant_Materials/generations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SALESFORCE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify(req.body)
+    });
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[create-session] Error:', err);
+    res.status(500).json({ error: 'Failed to create session' });
+  }
+});
+
 
 const PORT = 5001;
 app.listen(PORT, () => {
