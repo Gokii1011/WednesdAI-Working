@@ -6,7 +6,7 @@ const app = express();
 app.use(cors()); // allow all origins for now
 app.use(express.json());
 
-const SALESFORCE_ACCESS_TOKEN = 'eyJ0bmsiOiJjb3JlL3Byb2QvMDBESG8wMDAwMDdFWFNWTUE0IiwidmVyIjoiMS4wIiwia2lkIjoiQ09SRV9BVEpXVC4wMERIbzAwMDAwN0VYU1YuMTc1MDI2MjIxNTMwNSIsInR0eSI6InNmZGMtY29yZS10b2tlbiIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzY3AiOiJzZmFwX2FwaSBjaGF0Ym90X2FwaSBhcGkiLCJzdWIiOiJ1aWQ6MDA1SG8wMDAwMDkzZlJxSUFJIiwicm9sZXMiOltdLCJpc3MiOiJodHRwczovL2luMTc1MDI1NzIyOTIyMy5teS5zYWxlc2ZvcmNlLmNvbSIsImNsaWVudF9pZCI6IjNNVkc5UnIwRVoyWU9WTWFVaWlNMl81TzlMem5PUmc2TVZMRk9QbFZxaElTLnNGYVpEUzRRbDBRa0xfWUloNGVsci51QW5sSE40RGV1MzFXUFh2X00iLCJjZHBfdGVuYW50IjoiYTM2MC9wcm9kLzQ3NjdkMjIwZGUxMDRiYzBhODlkNGFiNzM5ZGJjNmU0IiwiYXVkIjpbImh0dHBzOi8vYXBpLnNhbGVzZm9yY2UuY29tIiwiaHR0cHM6Ly9pbjE3NTAyNTcyMjkyMjMubXkuc2FsZXNmb3JjZS5jb20iXSwibmJmIjoxNzUxNzc5MjUyLCJtdHkiOiJvYXV0aCIsInNmYXBfcmgiOiJib3Qtc3ZjLWxsbTphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixib3Qtc3ZjLWxsbS9GbG93R3B0OmF3cy1wcm9kMS11c2Vhc3QxL2VpbnN0ZWluLGJvdC1zdmMtbGxtL0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbixlaW5zdGVpbi10cmFuc2NyaWJlL0VpbnN0ZWluR1BUOmF3cy1wcm9kOC1jYWNlbnRyYWwxL2VpbnN0ZWluLG12cy9FREM6YXdzLXByb2QxLXVzZWFzdDEvZWluc3RlaW4sZWluc3RlaW4tYWktZ2F0ZXdheS9FaW5zdGVpbkdQVDphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixlaW5zdGVpbi1haS1nYXRld2F5L0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbiIsInNmaSI6IjEyMzQzNGIzN2FmMGU2ZjMyMDg2NTM1YWVjYmFiYmJlMjdlOTQ1NzRhOTUxOGY3ZDdlYjg3YTgzYzBkZmE4OTUiLCJzZmFwX29wIjoiRWluc3RlaW5IYXdraW5nQzJDRW5hYmxlZCxFR3B0Rm9yRGV2c0F2YWlsYWJsZSxFaW5zdGVpbkdlbmVyYXRpdmVTZXJ2aWNlLFRhYmxlYXVNZXRyaWNCYXNpY3MsU2FsZXNmb3JjZUNvbmZpZ3VyYXRvckVuZ2luZSIsImhzYyI6ZmFsc2UsImNkcF91cmwiOiJodHRwczovL2EzNjAuY2RwLmNkcDMuYXdzLXByb2QxLXVzZWFzdDEuYXdzLnNmZGMuY2wiLCJleHAiOjE3NTE3ODEwNjcsImlhdCI6MTc1MTc3OTI2N30.Gtji96oI5j-CDzIp9jlxdeQja9Pgb5XGoZPo6C0sF9eDZPXv--mKWG-y16JNd0fjX6uy-5sHdirEXQRUZTC2N0HZqZXis8c286GFzxwlIhZMjfC6FnUtaFBOHQ-JPxBKqwGHUtyPFFk0tyOptUib8W0F2IKyfGdDXDNV6ibWKuI8APvVrc6mf8wsoyW1fKleaux02KqvtGDi0k8e6aYWs3mVLvpccjYt26wEMob66TjZ3VbWWOPWc02UziKq3Sam66B6DiMBSufhS95YDAvWj8BO9dqmSArwNX__KD9p1fV0UscftXKIHqCWM9dPfma4EL3eBhuH8QkFk8nLSQxn4Q'
+const SALESFORCE_ACCESS_TOKEN = 'eyJ0bmsiOiJjb3JlL3Byb2QvMDBESG8wMDAwMDdFWFNWTUE0IiwidmVyIjoiMS4wIiwia2lkIjoiQ09SRV9BVEpXVC4wMERIbzAwMDAwN0VYU1YuMTc1MDI2MjIxNTMwNSIsInR0eSI6InNmZGMtY29yZS10b2tlbiIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzY3AiOiJzZmFwX2FwaSBjaGF0Ym90X2FwaSBhcGkiLCJzdWIiOiJ1aWQ6MDA1SG8wMDAwMDkzZlJxSUFJIiwicm9sZXMiOltdLCJpc3MiOiJodHRwczovL2luMTc1MDI1NzIyOTIyMy5teS5zYWxlc2ZvcmNlLmNvbSIsImNsaWVudF9pZCI6IjNNVkc5UnIwRVoyWU9WTWFVaWlNMl81TzlMem5PUmc2TVZMRk9QbFZxaElTLnNGYVpEUzRRbDBRa0xfWUloNGVsci51QW5sSE40RGV1MzFXUFh2X00iLCJjZHBfdGVuYW50IjoiYTM2MC9wcm9kLzQ3NjdkMjIwZGUxMDRiYzBhODlkNGFiNzM5ZGJjNmU0IiwiYXVkIjpbImh0dHBzOi8vaW4xNzUwMjU3MjI5MjIzLm15LnNhbGVzZm9yY2UuY29tIiwiaHR0cHM6Ly9hcGkuc2FsZXNmb3JjZS5jb20iXSwibmJmIjoxNzUxODMxMjQ5LCJtdHkiOiJvYXV0aCIsInNmYXBfcmgiOiJib3Qtc3ZjLWxsbTphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixib3Qtc3ZjLWxsbS9GbG93R3B0OmF3cy1wcm9kMS11c2Vhc3QxL2VpbnN0ZWluLGJvdC1zdmMtbGxtL0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbixlaW5zdGVpbi10cmFuc2NyaWJlL0VpbnN0ZWluR1BUOmF3cy1wcm9kOC1jYWNlbnRyYWwxL2VpbnN0ZWluLG12cy9FREM6YXdzLXByb2QxLXVzZWFzdDEvZWluc3RlaW4sZWluc3RlaW4tYWktZ2F0ZXdheS9FaW5zdGVpbkdQVDphd3MtcHJvZDgtY2FjZW50cmFsMS9laW5zdGVpbixlaW5zdGVpbi1haS1nYXRld2F5L0VEQzphd3MtcHJvZDEtdXNlYXN0MS9laW5zdGVpbiIsInNmaSI6Ijk5ZmI1ZmY5NDhhZTM1YzkzZDI5YmVmODA4MGEzNDNiMzk1ZWMwYjBjN2E3NDZiZDRlMTg3ZmRiMTEyMzU4NTIiLCJzZmFwX29wIjoiRWluc3RlaW5IYXdraW5nQzJDRW5hYmxlZCxFR3B0Rm9yRGV2c0F2YWlsYWJsZSxFaW5zdGVpbkdlbmVyYXRpdmVTZXJ2aWNlLFRhYmxlYXVNZXRyaWNCYXNpY3MsU2FsZXNmb3JjZUNvbmZpZ3VyYXRvckVuZ2luZSIsImhzYyI6ZmFsc2UsImNkcF91cmwiOiJodHRwczovL2EzNjAuY2RwLmNkcDMuYXdzLXByb2QxLXVzZWFzdDEuYXdzLnNmZGMuY2wiLCJleHAiOjE3NTE4MzMwNjQsImlhdCI6MTc1MTgzMTI2NH0.N7n47sAfmlRWa9MTPx2QRi4dp3w07qjhbtZklRctWwZGVy-KvjC56TOkx3hNMQLnZpMSdUH2RFtU1JLeKXfdIuFk9X3btpjM93idySsqjuWuRSF8b5YE621IUHQSl34M1UI2kUn3Rk_kd1nOe8nuxpZ9eJsjLUKZbit7vSfKkpOSzhTXNSy8can0bXQ-SVNUgjDTeawgUsQaLtKA-TqxfQfBBzxxKC-oSEQ0JbUpzVz9QQCjYoXyYSzinwNqz8toY5MIsmvYkvqipaMniGOluuTT6XzAL7OExqfXsvZz9lWYjOlT5FGG-AxHNIEUXdYCqB4S774ohiobbNCHCgBQnA'
 const BASE_URL_TEMPLATE = 'https://in1750257229223.my.salesforce.com';
 const AGENT_ENDPOINT = 'https://api.salesforce.com/einstein/ai-agent/v1/agents/0XxHo0000011VDGKA2/sessions';
 
@@ -138,7 +138,44 @@ app.post('/call-template', async (req, res) => {
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (err) {
-    console.error('[create-session] Error:', err);
+    console.error('[call-template] Error:', err);
+    res.status(500).json({ error: 'Failed to create session' });
+  }
+});
+
+app.post('/call-flow', async (req, res) => {
+  try {
+    console.log('called');
+    console.log(req.body);
+    // const body = JSON.stringify({
+    //       isPreview: false,
+    //       inputParams:{
+    //           valueMap:{
+    //             "Input:userQuery" : {
+    //               value : 'Hii'
+    //             }
+    //           }
+    //       },
+    //       additionalConfig:{
+    //         numGenerations: '1',
+    //         temperature: '0.0',
+    //         applicationName: 'PromptTemplateGenerationsInvocable'
+    //       }
+    //   });
+
+    const response = await fetch(`${BASE_URL_TEMPLATE}/services/data/v64.0/actions/custom/flow/Send_Slack_Message_for_Hyper_Assist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SALESFORCE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify(req.body)
+    });
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[call-flow] Error:', err);
     res.status(500).json({ error: 'Failed to create session' });
   }
 });
