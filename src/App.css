@@ -142,7 +142,7 @@ body {
 
 .chat-header {
   padding: 16px 20px;
-  background-color:rgb(116, 205, 240);
+  background-color:rgb(65, 65, 65);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -189,14 +189,14 @@ body {
 }
 
 .chat-message.user {
-  background-color: #daf0ff;
+  background-color: #c6e1f3;
   align-self: flex-end;
   text-align: right;
   margin-left: auto;
 }
 
 .chat-message.agent {
-  background-color: #f1f1f1;
+  background-color: #e4e3e3;
   align-self: flex-start;
   text-align: left;
   margin-right: auto;
@@ -481,7 +481,7 @@ body {
 .mic-button {
   font-size: 64px;
   padding: 30px;
-  background-color: #33fff5;
+  background-color: #575757;
   border: none;
   border-radius: 50%;
   color: white;
@@ -491,7 +491,7 @@ body {
 }
 
 .mic-button.recording {
-  background-color: #d50000;
+  background-color: #e05a00;
   animation: pulse 1s infinite;
 }
 
@@ -860,4 +860,45 @@ body {
   border: 2px solid #f7b018;
   padding: 10px;
   background-color: #e6f0ff;
+}
+
+.module-card-container {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.module-card-container:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
+}
+
+@keyframes fadeInBlur {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.chat-box-window, 
+.chat-box-window2 {
+  animation: fadeInBlur 0.5s ease-out;
 }

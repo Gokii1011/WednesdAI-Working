@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
-import bgImage from "./IMG_8657.jpg";
+import bgImage from "./AdobeStock_1041407944.jpeg";
 import html2pdf from "html2pdf.js";
 import PDFTemplate from "./components/PDFTemplate";
 import { createRoot } from "react-dom/client";
@@ -431,73 +431,52 @@ function App() {
 
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
-      <h1 className="title">WednesdAI 3D Labs</h1>
       <div className="module-layer">
         {/* WednesdAI */}
         <div
           className="module-card-container"
-          style={{ top: "12%", left: "15%" }}
+          style={{ top: "26%", left: "38%" }}
           onClick={() => handleTopicClick("WednesdAI")}
         >
-          <div
-            className={`module-card ${
-              completedSteps.includes("WednesdAI") ? "completed" : ""
-            }`}
-          >
             <p>WednesdAI</p>
-          </div>
+          
         </div>
 
         {/* B Y Porto */}
         <div
           className="module-card-container"
-          style={{ top: "71%", left: "17%" }}
+          style={{ top: "23%", left: "60%" }}
           onClick={() => handleTopicClick("B Y Porto")}
         >
-          <div
-            className={`module-card ${
-              completedSteps.includes("B Y Porto") ? "completed" : ""
-            }`}
-          >
+          
             <p>B&nbsp;Y&nbsp;Porto</p>
-          </div>
+          
         </div>
 
         {/* Product Configuration */}
         <div
           className="module-card-container"
-          style={{ top: "32%", left: "63%" }}
+          style={{ top: "65%", left: "33%" }}
           onClick={() => handleTopicClick("Product Configuration")}
         >
-          <div
-            className={`module-card ${
-              completedSteps.includes("Product Configuration")
-                ? "completed"
-                : ""
-            }`}
-          >
-            {/*<div className="icon-circle">*/}
+          
             <p>
-              Product
+              Configure
               <br />
-              Configuration
+              Products
             </p>
-          </div>
+          
         </div>
 
         {/* cafe */}
         <div
           className="module-card-container"
-          style={{ top: "75%", left: "75%" }}
+          style={{ top: "66%", left: "63%" }}
           onClick={() => handleTopicClick("cafe")}
         >
-          <div
-            className={`module-card ${
-              completedSteps.includes("cafe") ? "completed" : ""
-            }`}
-          >
-            <p>cafe</p>
-          </div>
+          
+            <p>Cafe</p>
+          
         </div>
       </div>
 
