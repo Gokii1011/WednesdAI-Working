@@ -52,6 +52,11 @@ const [configAnswers, setConfigAnswers] = useState({});
   const [selectedModuleCon, setSelectedModuleCon] = useState(null);
   const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
 
+  //Slack
+  const [supportActive, setSupportActive] = useState(true);
+  const [floorName, setFloorName] = useState('');
+
+  var floor = '';
 
   useEffect(() => {
     scrollToBottom();
@@ -152,7 +157,7 @@ const [configAnswers, setConfigAnswers] = useState({});
   };
 
   const handleSupportClick = () => {
-      //setSupportActive(!supportActive);
+      setSupportActive(!supportActive);
       console.log(supportActive);
       const arr = [selectedModule, selectedModuleBY, selectedModuleCon, selectedModuleCafe];
       console.log("selectedModule",selectedModule);
