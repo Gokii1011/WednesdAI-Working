@@ -5,6 +5,7 @@ import html2pdf from "html2pdf.js";
 import PDFTemplate from "./components/PDFTemplate";
 import { createRoot } from "react-dom/client";
 import MultiChoiceCard from "./components/MultiChoiceCard";
+import tickIcon from "./tick.png";
 //import QuoteTemplate from './components/QuoteTemplate';
 
 const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
@@ -39,6 +40,11 @@ function App() {
   const [materialType, setMaterialType] = useState([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState(null);
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [selectedModuleBY, setSelectedModuleBY] = useState(null);
+  const [selectedModuleCon, setSelectedModuleCon] = useState(null);
+  const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
+
 
   useEffect(() => {
     scrollToBottom();
@@ -139,12 +145,32 @@ function App() {
   };
 
   const handleTopicClick = async (topic) => {
+
+    if(topic === "WednesdAI")
+    {
+     setSelectedModule((topic) =>
+    topic === "WednesdAI" ? null : "WednesdAI"
+    )
+  }
+
     if (topic === "B Y Porto") {
+       setSelectedModuleBY((topic) =>
+      topic === "B Y Porto" ? null : "B Y Porto")
       setIsByProtoOpen(true);
       setActiveModule(null);
       return;
     }
+
+    if (topic === "Product Configuration") {
+      setSelectedModuleCon((topic) =>
+      topic === "Product Configuration" ? null : "Product Configuration"
+      )
+    }
+    
     if (topic === "cafe") {
+      setSelectedModuleCafe((topic) =>
+      topic === "cafe" ? null : "cafe"
+      )
       setActiveModule(topic);
       setMessages([
         {
@@ -438,8 +464,17 @@ function App() {
           style={{ top: "26%", left: "38%" }}
           onClick={() => handleTopicClick("WednesdAI")}
         >
-            <p>WednesdAI</p>
-          
+          <div
+            className={`module-card ${
+              selectedModule === "WednesdAI" ? "checked" : ""
+            }`}
+          >
+            {selectedModule === "WednesdAI" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>WednesdAI</p>
+            )}
+          </div>
         </div>
 
         {/* B Y Porto */}
@@ -448,9 +483,17 @@ function App() {
           style={{ top: "23%", left: "60%" }}
           onClick={() => handleTopicClick("B Y Porto")}
         >
-          
-            <p>B&nbsp;Y&nbsp;Porto</p>
-          
+         <div
+            className={`module-card ${
+              selectedModuleBY === "B Y Porto" ? "checked" : ""
+            }`}
+          >
+            {selectedModuleBY === "B Y Porto" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>B Y Proto</p>
+            )}
+          </div>
         </div>
 
         {/* Product Configuration */}
@@ -458,13 +501,21 @@ function App() {
           className="module-card-container"
           style={{ top: "65%", left: "33%" }}
           onClick={() => handleTopicClick("Product Configuration")}
-        >
-          
-            <p>
-              Configure
-              <br />
-              Products
-            </p>
+        ><div
+            className={`module-card ${
+              selectedModuleCon === "Product Configuration" ? "checked" : ""
+            }`}
+          >
+            {selectedModuleCon === "Product Configuration" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>
+            Configure
+            <br />
+            Products
+          </p>
+            )}
+          </div>
           
         </div>
 
@@ -474,8 +525,17 @@ function App() {
           style={{ top: "66%", left: "63%" }}
           onClick={() => handleTopicClick("cafe")}
         >
-          
-            <p>Cafe</p>
+          <div
+            className={`module-card ${
+              selectedModuleCafe === "cafe" ? "checked" : ""
+            }`}
+          >
+            {selectedModuleCafe === "cafe" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>Cafe</p>
+            )}
+          </div>
           
         </div>
       </div>
