@@ -26,17 +26,19 @@ function App() {
   const recognitionRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
   const [editorInput, setEditorInput] = useState(""); //state to hold the suggestions input
-  const [showSuggestions, setShowSuggestions] = useState(false); //state to display the suggestions
   var sessid = ""; //created to store the session id for Cafeteria Agent
   const [isPrinting, setIsPrinting] = useState(false);
   const [printTimer, setPrintTimer] = useState(5 * 60); // 10 minutes
-  const [materialSuggestions, setMaterialSuggestions] = useState([]); //not used
-  const [colorSuggestions, setColorSuggestions] = useState([]); //not used
-  const [explanation, setExplanation] = useState(""); //not used
-  const [hexCodesArr,setHexcodes] = useState([]); //not used
-  const materials = [];
-  const colors = [];
-  const hexcodes = [];
+
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [materials, setMaterials] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [hexCodes, setHexCodes] = useState([]);
+  const [suggestionNote, setSuggestionNote] = useState("");
+  const [materialType, setMaterialType] = useState([]);
+  const [selectedColorIndex, setSelectedColorIndex] = useState(null);
+  const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -325,16 +327,15 @@ function App() {
   };
 
   /**************************************/
-  //B Y Prototype logics
+  //B Y Prototype logic
   const sendSuggestion = (e) => {
     console.log("1", editorInput);
+    setLoadingSuggestions(true); // show spinner
     sendSuggestionText(editorInput);
-    setShowSuggestions(true); //hides the old view and opens new view with suggestions
   };
 
   const startPrinting = () => {
     setIsPrinting(true);
-    
   };
 
   const formatTime = (seconds) => {
@@ -356,30 +357,30 @@ function App() {
   const sendSuggestionText = async (text) => {
     console.log("2", editorInput);
     try {
-      const res = await fetch(
-        `http://localhost:5001/call-template`,
-       {
+      const res = await fetch(`http://localhost:5001/call-template`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           isPreview: false,
-          inputParams:{
-              valueMap:{
-                "Input:userQuery" : {
-                  value : ''+text
-                }
-              }
+          inputParams: {
+            valueMap: {
+              "Input:userQuery": {
+                value: "" + text,
+              },
+            },
           },
-          additionalConfig:{
-            numGenerations: '1',
-            temperature: '0.0',
-            applicationName: 'PromptTemplateGenerationsInvocable'
-          }
-      })
+          additionalConfig: {
+            numGenerations: "1",
+            temperature: "0.0",
+            applicationName: "PromptTemplateGenerationsInvocable",
+          },
+        }),
       });
       const data = await res.json();
+      const rawText = data.generations[0].text;
       console.log(data);
-      processResponse(data);
+      console.log(rawText);
+      processSuggestionResponse(rawText);
       return (
         data?.messages?.[0]?.message ||
         data?.messages?.[0]?.text ||
@@ -387,44 +388,46 @@ function App() {
       );
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingSuggestions(false);
+      //setShowSuggestions(true); untoggle to view the next page
     }
   };
 
-  function processResponse(response)
-  {
-      
-       console.log('iinide')
-        // STEP 1: Extract the text field
-const rawText = response.generations[0].text.trim();
+  const processSuggestionResponse = (data) => {
+    const parsedData = JSON.parse(data);
+    console.log(parsedData);
 
-// STEP 2: Split lines
-const lines = rawText.split('\n').filter(line => line.trim() !== '');
+    const results = parsedData.results;
+    const reason = parsedData.reason;
 
-// STEP 3: Extract rows ignoring header
-const rows = lines.slice(1, -1); // assuming last line is explanation
-const suggestionNote = lines[lines.length - 1];
-setExplanation(suggestionNote);
+    const newMaterials = [];
+    const newMaterialType = [];
+    const newColors = [];
+    const newHexCodes = [];
 
-// STEP 4: Parse color/material names from each ro
-rows.forEach(line => {
-  const parts = line.split('|').map(p => p.trim());
-  console.log(parts);
-  
-  
-  if (parts.length === 4) {
-    const [materialName, , colorName, colorHex] = parts;
-    materials.push(materialName);
-    colors.push(colorName);
-    hexcodes.push(colorHex);
-  }
-});
-// Resulting Variables
-console.log("📦 Materials:", materials);         // ["ABS Classic", "PLA Pro"]
-console.log("🎨 Colors:", colors);               // [{name: "Jet Black", hex: "#000000"}, ...]
-console.log('Hexcodes', hexcodes);
-console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
-      }
-  
+    results.forEach((item) => {
+      newMaterials.push(item["Material Name"]);
+      newMaterialType.push(item["Material Type"]);
+      newColors.push(item["Color Name"]);
+      newHexCodes.push(item["Color Hex code"]);
+    });
+
+    setMaterials(newMaterials);
+    setColors(newColors);
+    setMaterialType(newMaterialType);
+    setHexCodes(newHexCodes);
+    setSuggestionNote(reason);
+
+    console.log("SuggestionNote", reason);
+    console.log("newMaterials", newMaterials);
+    console.log("newMaterialType", newMaterialType);
+    console.log("newHexCodes", newHexCodes);
+    console.log("newColors", newColors);
+
+    setLoadingSuggestions(false); // stop loading spinner
+    setShowSuggestions(true); // now show the suggestion screen
+  };
 
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
@@ -502,7 +505,7 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
         <div className="chat-overlay">
           <div className="chat-box-window2">
             <div className="chat-header2">
-              <h2>🧪 B Y Proto Module</h2>
+              <h3>B Y Proto (Build Your Prototype)</h3>
               <button onClick={closeProtoWindow} className="close-btn">
                 ×
               </button>
@@ -518,7 +521,7 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
                     }`}
                     onClick={() => setSelectedSketch(i)}
                   >
-                     <img
+                    <img
                       src={`/sketches/sketch${i + 1}.png`}
                       alt={`Sketch ${i + 1}`}
                     />
@@ -544,7 +547,7 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
         <div className="editor-overlay">
           <div className="editor-window">
             <div className="editor-header">
-              <h3>🖊️ Design Editor</h3>
+              <h3>Design Editor</h3>
               <button
                 onClick={() => setIsEditorOpen(false)}
                 className="close-btn"
@@ -564,7 +567,12 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
               <div className="editor-divider" />
 
               <div className="editor-input">
-                {!showSuggestions ? (
+                {loadingSuggestions ? (
+                  <div className="loading-spinner">
+                    <div className="spinner" />
+                    <p>Generating suggestions...</p>
+                  </div>
+                ) : !showSuggestions ? (
                   <>
                     <textarea
                       placeholder="Describe your design requirements here..."
@@ -586,20 +594,21 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
                     <div className="suggestion-section">
                       <h3>Suggested Colors</h3>
                       <div className="color-box-container">
-                        <div className="material-row2">
+                        {colors.map((color, index) => (
                           <div
-                            className="color-box"
-                            style={{ backgroundColor: hexcodes[0] }}
-                          />
-                          <p className="color-label">{colors[0]}</p>
-                        </div>
-                        <div className="material-row2">
-                          <div
-                            className="color-box"
-                            style={{ backgroundColor: hexcodes[1] }}
-                          />
-                          <p className="color-label">{colors[1]}</p>
-                        </div>
+                            key={index}
+                            className={`material-row2 selectable-card ${
+                              selectedColorIndex === index ? "selected" : ""
+                            }`}
+                            onClick={() => setSelectedColorIndex(index)}
+                          >
+                            <div
+                              className="color-box"
+                              style={{ backgroundColor: hexCodes[index] }}
+                            />
+                            <p className="color-label">{color}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -607,26 +616,29 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
                     <div className="suggestion-section">
                       <h3>Suggested Materials</h3>
                       <div className="material-row">
-                        <div className="material-card">
-                          <p>
-                            <strong>{materials[0]}</strong>
-                          </p>
-                        </div>
-                        <div className="material-card">
-                          <p>
-                            <strong>ABS Plastic</strong>
-                          </p>
-                        </div>
+                        {materials.map((material, index) => (
+                          <div
+                            key={index}
+                            className={`material-card selectable-card ${
+                              selectedMaterialIndex === index ? "selected" : ""
+                            }`}
+                            onClick={() => setSelectedMaterialIndex(index)}
+                          >
+                            <p>
+                              <strong>{material}</strong>
+                            </p>
+                            <p className="material-type">
+                              ({materialType[index]})
+                            </p>{" "}
+                            {/* optional */}
+                          </div>
+                        ))}
                       </div>
                     </div>
 
                     {/* Highlight */}
                     <div className="suggestion-highlight">
-                      <p>
-                        These colors and materials are selected based on
-                        durability, aesthetic appeal, and compatibility with
-                        your product's design language.
-                      </p>
+                      <p>{suggestionNote}</p>
                     </div>
 
                     {/* Timer or Buttons */}
@@ -636,12 +648,14 @@ console.log("💡 Suggestion Text:", suggestionNote); // justification sentence
                         <p>
                           Estimated time remaining: {formatTime(printTimer)}
                         </p>
-    <div className="progress-bar-container">
-      <div
-        className="progress-bar-fill"
-        style={{ width: `${(1 - printTimer / 600) * 100}%` }}
-      ></div>
-    </div>
+                        <div className="progress-bar-container">
+                          <div
+                            className="progress-bar-fill"
+                            style={{
+                              width: `${(1 - printTimer / 600) * 100}%`,
+                            }}
+                          ></div>
+                        </div>
                       </div>
                     ) : (
                       <div className="suggestion-actions">
