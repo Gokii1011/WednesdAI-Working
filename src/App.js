@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
-import bgImage from "./IMG_8657.jpg";
+import bgImage from "./AdobeStock_1041407944.jpeg";
 import html2pdf from "html2pdf.js";
 import PDFTemplate from "./components/PDFTemplate";
 import { createRoot } from "react-dom/client";
 import MultiChoiceCard from "./components/MultiChoiceCard";
+import tickIcon from "./tick.png";
 //import QuoteTemplate from './components/QuoteTemplate';
 
 const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
@@ -39,8 +40,16 @@ function App() {
   const [materialType, setMaterialType] = useState([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState(null);
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
+<<<<<<< HEAD
 const [currentConfigStep, setCurrentConfigStep] = useState(-1);
 const [configAnswers, setConfigAnswers] = useState({});
+=======
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [selectedModuleBY, setSelectedModuleBY] = useState(null);
+  const [selectedModuleCon, setSelectedModuleCon] = useState(null);
+  const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
+
+>>>>>>> adf52c8512671a1cc514710a9554471629e0789d
 
   useEffect(() => {
     scrollToBottom();
@@ -141,12 +150,32 @@ const [configAnswers, setConfigAnswers] = useState({});
   };
 
   const handleTopicClick = async (topic) => {
+
+    if(topic === "WednesdAI")
+    {
+     setSelectedModule((topic) =>
+    topic === "WednesdAI" ? null : "WednesdAI"
+    )
+  }
+
     if (topic === "B Y Porto") {
+       setSelectedModuleBY((topic) =>
+      topic === "B Y Porto" ? null : "B Y Porto")
       setIsByProtoOpen(true);
       setActiveModule(null);
       return;
     }
+
+    if (topic === "Product Configuration") {
+      setSelectedModuleCon((topic) =>
+      topic === "Product Configuration" ? null : "Product Configuration"
+      )
+    }
+    
     if (topic === "cafe") {
+      setSelectedModuleCafe((topic) =>
+      topic === "cafe" ? null : "cafe"
+      )
       setActiveModule(topic);
       setMessages([
         {
@@ -493,73 +522,86 @@ const [configAnswers, setConfigAnswers] = useState({});
 
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
-      <h1 className="title">WednesdAI 3D Labs</h1>
       <div className="module-layer">
         {/* WednesdAI */}
         <div
           className="module-card-container"
-          style={{ top: "12%", left: "15%" }}
+          style={{ top: "26%", left: "38%" }}
           onClick={() => handleTopicClick("WednesdAI")}
         >
           <div
             className={`module-card ${
-              completedSteps.includes("WednesdAI") ? "completed" : ""
+              selectedModule === "WednesdAI" ? "checked" : ""
             }`}
           >
-            <p>WednesdAI</p>
+            {selectedModule === "WednesdAI" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>WednesdAI</p>
+            )}
           </div>
         </div>
 
         {/* B Y Porto */}
         <div
           className="module-card-container"
-          style={{ top: "71%", left: "17%" }}
+          style={{ top: "23%", left: "60%" }}
           onClick={() => handleTopicClick("B Y Porto")}
         >
-          <div
+         <div
             className={`module-card ${
-              completedSteps.includes("B Y Porto") ? "completed" : ""
+              selectedModuleBY === "B Y Porto" ? "checked" : ""
             }`}
           >
-            <p>B&nbsp;Y&nbsp;Porto</p>
+            {selectedModuleBY === "B Y Porto" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>B Y Proto</p>
+            )}
           </div>
         </div>
 
         {/* Product Configuration */}
         <div
           className="module-card-container"
-          style={{ top: "32%", left: "63%" }}
+          style={{ top: "65%", left: "33%" }}
           onClick={() => handleTopicClick("Product Configuration")}
-        >
-          <div
+        ><div
             className={`module-card ${
-              completedSteps.includes("Product Configuration")
-                ? "completed"
-                : ""
+              selectedModuleCon === "Product Configuration" ? "checked" : ""
             }`}
           >
-            {/*<div className="icon-circle">*/}
-            <p>
-              Product
-              <br />
-              Configuration
-            </p>
+            {selectedModuleCon === "Product Configuration" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>
+            Configure
+            <br />
+            Products
+          </p>
+            )}
           </div>
+          
         </div>
 
         {/* cafe */}
         <div
           className="module-card-container"
-          style={{ top: "75%", left: "75%" }}
+          style={{ top: "66%", left: "63%" }}
           onClick={() => handleTopicClick("cafe")}
         >
           <div
             className={`module-card ${
-              completedSteps.includes("cafe") ? "completed" : ""
+              selectedModuleCafe === "cafe" ? "checked" : ""
             }`}
           >
-            <p>cafe</p>
+            {selectedModuleCafe === "cafe" ? (
+              <img src={tickIcon} alt="Selected" className="tick-icon" />
+            ) : (
+              <p>Cafe</p>
+            )}
           </div>
+          
         </div>
       </div>
 
