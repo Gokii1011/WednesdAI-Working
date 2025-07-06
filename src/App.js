@@ -45,16 +45,13 @@ function App() {
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
 
   //Buttons
+const [currentConfigStep, setCurrentConfigStep] = useState(-1);
+const [configAnswers, setConfigAnswers] = useState({});
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedModuleBY, setSelectedModuleBY] = useState(null);
   const [selectedModuleCon, setSelectedModuleCon] = useState(null);
   const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
 
-  //Slack
-  const [supportActive, setSupportActive] = useState(false);
-  const [floorName, setFloorName] = useState('');
-
-  var floor = '';
 
   useEffect(() => {
     scrollToBottom();
@@ -214,7 +211,7 @@ function App() {
           text: `👋 Welcome to the ${topic} module! How can I assist you?`,
         },
       ]);
-    } else {
+    }else if(topic !== "Product Configuration"){
       setIsByProtoOpen(false);
       setMessages([
         {
@@ -231,9 +228,41 @@ function App() {
     console.log("newsessionid", newSessionId);
     setSessionId(newSessionId);
     if (topic === "Product Configuration") {
+      setCurrentConfigStep(-1);
+      setConfigAnswers({});
+      setMessages([
+        {
+          sender: "agent",
+          text: `👋 Welcome to the ${topic} module! How can I assist you?`,
+        },
+      ]);
+      setIsByProtoOpen(false);
+      setActiveModule(topic);
+      setCompletedSteps((prev) => [...new Set([...prev, topic])]);
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
+          {
+            sender: "agent",
+            text: "Let's get started! Please choose the product you want to design?<br/>- Hearing Aid<br/> - Phone Case<br/> - EyeGlass Frame<br/> - Toy Model",
+          },
+        ]);
+      }, 500);
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    /*Product Configuration*/
+    // Product Configuration Flow: Capture product name or quantity
+    if (activeModule === "Product Configuration") {
+      if (currentConfigStep === -1) {
+        setConfigAnswers({ product: input.trim() });
+        setMessages((prev) => [
+          ...prev,
+          { sender: "user", text: input.trim() },
           {
             sender: "agent",
             text: "Choose a material for the product:",
@@ -245,13 +274,41 @@ function App() {
             ],
           },
         ]);
-      }, 500); // delay so it appears after welcome message
-    }
-  };
+        setInput("");
+        setCurrentConfigStep(0);
+        return;
+      }
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+      if (currentConfigStep === 5) {
+        // Quantity is the final input (text)
+        const finalAnswers = {
+          ...configAnswers,
+          quantity: input.trim(),
+        };
+
+        const summary = Object.entries(finalAnswers)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join(", ");
+
+        setMessages((prev) => [
+          ...prev,
+          { sender: "user", text: input.trim() },
+          { sender: "agent", text: "...", isLoading: true },
+        ]);
+        setInput("");
+        console.log('Prouct '+JSON.stringify(finalAnswers))
+        
+        const resText = await sendMessageToSession(sessionId, summary);
+        setMessages((prev) => [
+          ...prev.slice(0, -1),
+          { sender: "agent", text: resText },
+        ]);
+        setCurrentConfigStep(-1);
+        setConfigAnswers({});
+        return;
+      }
+}
+
 
     const userMsg = { sender: "user", text: input };
     const loadingMsg = { sender: "agent", text: "...", isLoading: true };
@@ -839,23 +896,62 @@ function App() {
                       text={msg.text}
                       options={msg.options}
                       onSelect={(option) => {
+                        if (activeModule === "Product Configuration") {
+                          const stepMap = [
+                            { key: "material" },
+                            { key: "printResolution", question: "Choose Print Resolution:", options: [{ label: "100 µm" }, { label: "200 µm" }, { label: "300 µm" }] },
+                            { key: "layerHeight", question: "Select Layer Height:", options: [{ label: "0.05 mm" }, { label: "0.1 mm" }, { label: "0.2 mm" }] },
+                            { key: "wallThickness", question: "Select Wall Thickness:", options: [{ label: "2.5 mm" }, { label: "3-4 mm" }, { label: "5 mm" }] },
+                            { key: "infillDensity", question: "Choose Infill Density:", options: [{ label: "60%" }, { label: "80%" }, { label: "100%" }] },
+                            { key: "printSpeed", question: "Choose Print Speed:", options: [{ label: "40 mm/s" }, { label: "60 mm/s" }, { label: "80 mm/s" }] },
+                          ];
+
+                          const currentKey = stepMap[currentConfigStep].key;
+                          setConfigAnswers((prev) => ({ ...prev, [currentKey]: option.label }));
+                          setMessages((prev) => [...prev, { sender: "user", text: option.label }]);
+
+                          const nextStep = currentConfigStep + 1;
+
+                          if (nextStep < stepMap.length) {
+                            const nextQ = stepMap[nextStep];
+                            setMessages((prev) => [
+                              ...prev,
+                              {
+                                sender: "agent",
+                                text: nextQ.question,
+                                multipleChoice: true,
+                                options: nextQ.options,
+                              },
+                            ]);
+                            setCurrentConfigStep(nextStep);
+                          } else {
+                            // Ask for Quantity as last step (text)
+                            setMessages((prev) => [
+                              ...prev,
+                              {
+                                sender: "agent",
+                                text: "Enter the quantity you want to order:",
+                              },
+                            ]);
+                            setCurrentConfigStep(5);
+                          }
+
+                          return;
+                        }
+
+                        // fallback for other modules
                         const userMsg = { sender: "user", text: option.label };
-                        const loadingMsg = {
-                          sender: "agent",
-                          text: "...",
-                          isLoading: true,
-                        };
+                        const loadingMsg = { sender: "agent", text: "...", isLoading: true };
                         setMessages((prev) => [...prev, userMsg, loadingMsg]);
 
-                        sendMessageToSession(sessionId, option.label).then(
-                          (resText) => {
-                            setMessages((prev) => [
-                              ...prev.slice(0, -1),
-                              { sender: "agent", text: resText },
-                            ]);
-                          }
-                        );
+                        sendMessageToSession(sessionId, option.label).then((resText) => {
+                          setMessages((prev) => [
+                            ...prev.slice(0, -1),
+                            { sender: "agent", text: resText },
+                          ]);
+                        });
                       }}
+
                     />
                   ) : (
                     <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
