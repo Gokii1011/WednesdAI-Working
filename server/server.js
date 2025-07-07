@@ -138,7 +138,44 @@ app.post('/call-template', async (req, res) => {
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (err) {
-    console.error('[create-session] Error:', err);
+    console.error('[call-template] Error:', err);
+    res.status(500).json({ error: 'Failed to create session' });
+  }
+});
+
+app.post('/call-flow', async (req, res) => {
+  try {
+    console.log('called');
+    console.log(req.body);
+    // const body = JSON.stringify({
+    //       isPreview: false,
+    //       inputParams:{
+    //           valueMap:{
+    //             "Input:userQuery" : {
+    //               value : 'Hii'
+    //             }
+    //           }
+    //       },
+    //       additionalConfig:{
+    //         numGenerations: '1',
+    //         temperature: '0.0',
+    //         applicationName: 'PromptTemplateGenerationsInvocable'
+    //       }
+    //   });
+
+    const response = await fetch(`${BASE_URL_TEMPLATE}/services/data/v64.0/actions/custom/flow/Send_Slack_Message_for_Hyper_Assist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SALESFORCE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify(req.body)
+    });
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[call-flow] Error:', err);
     res.status(500).json({ error: 'Failed to create session' });
   }
 });

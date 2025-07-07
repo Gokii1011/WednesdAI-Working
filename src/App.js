@@ -6,6 +6,8 @@ import PDFTemplate from "./components/PDFTemplate";
 import { createRoot } from "react-dom/client";
 import MultiChoiceCard from "./components/MultiChoiceCard";
 import tickIcon from "./tick.png";
+import hypercare from "./lightning.png";
+import requested from "./Requesteds.png";
 //import QuoteTemplate from './components/QuoteTemplate';
 
 //const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
@@ -31,6 +33,7 @@ function App() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [printTimer, setPrintTimer] = useState(5 * 60); // 10 minutes
 
+  //BYPROTO
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [materials, setMaterials] = useState([]);
@@ -40,13 +43,27 @@ function App() {
   const [materialType, setMaterialType] = useState([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState(null);
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
+<<<<<<< HEAD
+=======
+
+  //Buttons
+>>>>>>> 351da04efda17bf380b76ea65c2d5c7bb5a3542f
 const [currentConfigStep, setCurrentConfigStep] = useState(-1);
 const [configAnswers, setConfigAnswers] = useState({});
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedModuleBY, setSelectedModuleBY] = useState(null);
   const [selectedModuleCon, setSelectedModuleCon] = useState(null);
   const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
+<<<<<<< HEAD
   var productDetails = {}
+=======
+
+  //Slack
+  const [supportActive, setSupportActive] = useState(true);
+  const [floorName, setFloorName] = useState('');
+
+  var floor = '';
+>>>>>>> 351da04efda17bf380b76ea65c2d5c7bb5a3542f
 
   useEffect(() => {
     scrollToBottom();
@@ -146,8 +163,34 @@ const [configAnswers, setConfigAnswers] = useState({});
     setIsByProtoOpen(false);
   };
 
-  const handleTopicClick = async (topic) => {
+  const handleSupportClick = () => {
+      setSupportActive(!supportActive);
+      console.log(supportActive);
+      const arr = [selectedModule, selectedModuleBY, selectedModuleCon, selectedModuleCafe];
+      console.log("selectedModule",selectedModule);
+      console.log("selectedModuleBY",selectedModuleBY);
+      console.log("selectedModuleCon",selectedModuleCon);
+      console.log("selectedModuleCafe",selectedModuleCafe);
+      var selectedFloor='';
+      const firstNullIndex = arr.findIndex(val => val === null || val === '');
+      if(firstNullIndex!= null || firstNullIndex != -1)
+      {
+        const arrWName = ["WednesdAI Assistant", "B Y Proto", "Configure Product", "Cafe"];
+        selectedFloor = arrWName[firstNullIndex-1];
+      }
+      if(firstNullIndex=== -1 )
+      {
+        selectedFloor = "Cafe";
+      }
+      console.log("sending floor:", selectedFloor);
 
+      sendSlackText(selectedFloor);
+  }
+
+  const handleTopicClick = async (topic) => {
+    floor = topic;
+    console.log('topic value',topic);
+    console.log('floorname', floor);
     if(topic === "WednesdAI")
     {
      setSelectedModule((topic) =>
@@ -188,7 +231,7 @@ const [configAnswers, setConfigAnswers] = useState({});
           text: `👋 Welcome to the ${topic} module! How can I assist you?`,
         },
       ]);
-      setActiveModule(topic);
+     setActiveModule(topic);
       setCompletedSteps((prev) => [...new Set([...prev, topic])]);
     }
 
@@ -539,6 +582,7 @@ const createQuotePdfUrl = () =>
       //setShowSuggestions(true); untoggle to view the next page
     }
   };
+  
 
   const processSuggestionResponse = (data) => {
     const parsedData = JSON.parse(data);
@@ -574,6 +618,48 @@ const createQuotePdfUrl = () =>
     setLoadingSuggestions(false); // stop loading spinner
     setShowSuggestions(true); // now show the suggestion screen
   };
+
+  /**************************************/
+  //Slack Logic
+  const sendSlackText = async (text) => {
+    console.log("2", text);
+    try {
+      const res = await fetch(`http://localhost:5001/call-flow`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inputs:[
+            {
+              "floorName" : ''+text
+            }
+          ]
+        }),
+      });
+      const data = await res.json();
+      console.log(data);
+      return (
+        data?.messages?.[0]?.message ||
+        data?.messages?.[0]?.text ||
+        "(no response)"
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      
+    }
+  };
+
+  const calculateFloor = () =>{
+    var arr = [selectedModule,selectedModuleBY,selectedModuleCon,selectedModuleCafe];
+    const firstNullIndex = arr.findIndex(val => val === null || val !== ''); 
+    console.log(firstNullIndex); 
+    var arrWName = ["WednesdAI Assistant", "B Y Proto", "Configure Product", "Cafe"];
+    console.log(arrWName[firstNullIndex]);
+    
+    setFloorName(arrWName[firstNullIndex-1])
+    console.log(floorName);
+    
+  }
 
   return (
     <div className="app-wrapper" style={{ backgroundImage: `url(${bgImage})` }}>
@@ -1062,6 +1148,12 @@ const createQuotePdfUrl = () =>
           </div>
         </div>
       )}
+            <div className="support-btn" onClick={handleSupportClick}>
+        <img
+          src={supportActive ? hypercare : tickIcon}
+          alt="Support"
+        />
+      </div>
     </div>
   );
 }
