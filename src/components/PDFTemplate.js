@@ -61,7 +61,7 @@ function PDFTemplate({ data }) {
       <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={thStyle}>QTY</th>
+            <th style={thStyle}>S.No</th>
             <th style={thStyle}>Description</th>
             <th style={thStyle}>Unit Price</th>
             <th style={thStyle}>Amount</th>
@@ -70,10 +70,10 @@ function PDFTemplate({ data }) {
         <tbody>
           {data.items.map((item, idx) => (
             <tr key={idx}>
-              <td style={tdStyle}>{item.qty}</td>
+              <td style={tdStyle}>{item.sNo}</td>
               <td style={tdStyle}>{item.description}</td>
               <td style={tdStyle}>${item.unitPrice.toFixed(2)}</td>
-              <td style={tdStyle}>${(item.qty * item.unitPrice).toFixed(2)}</td>
+              <td style={tdStyle}>${(data.quantity * item.unitPrice).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>

@@ -8,7 +8,7 @@ import MultiChoiceCard from "./components/MultiChoiceCard";
 import tickIcon from "./tick.png";
 //import QuoteTemplate from './components/QuoteTemplate';
 
-const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
+//const topics = ["WednesdAI", "B Y Porto", "Product Configuration", "cafe"];
 function App() {
   const [activeModule, setActiveModule] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -40,16 +40,13 @@ function App() {
   const [materialType, setMaterialType] = useState([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState(null);
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
-<<<<<<< HEAD
 const [currentConfigStep, setCurrentConfigStep] = useState(-1);
 const [configAnswers, setConfigAnswers] = useState({});
-=======
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedModuleBY, setSelectedModuleBY] = useState(null);
   const [selectedModuleCon, setSelectedModuleCon] = useState(null);
   const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
-
->>>>>>> adf52c8512671a1cc514710a9554471629e0789d
+  var productDetails = {}
 
   useEffect(() => {
     scrollToBottom();
@@ -240,9 +237,9 @@ const [configAnswers, setConfigAnswers] = useState({});
             text: "Choose a material for the product:",
             multipleChoice: true,
             options: [
-              { label: "Plastic", image: "" },
-              { label: "Metal", image: "" },
-              { label: "Wood", icon: "" },
+              { label: "Acrylic Resin", image: "" },
+              { label: "Silicone", image: "" },
+              { label: "Thermoplastic Polyurethane", icon: "" },
             ],
           },
         ]);
@@ -251,13 +248,14 @@ const [configAnswers, setConfigAnswers] = useState({});
         return;
       }
 
-      if (currentConfigStep === 5) {
+      if (currentConfigStep === 6) {
         // Quantity is the final input (text)
         const finalAnswers = {
           ...configAnswers,
           quantity: input.trim(),
         };
 
+        productDetails = finalAnswers;
         const summary = Object.entries(finalAnswers)
           .map(([key, val]) => `${key}: ${val}`)
           .join(", ");
@@ -270,13 +268,20 @@ const [configAnswers, setConfigAnswers] = useState({});
         setInput("");
         console.log('Prouct '+JSON.stringify(finalAnswers))
         
-        const resText = await sendMessageToSession(sessionId, summary);
         setMessages((prev) => [
           ...prev.slice(0, -1),
-          { sender: "agent", text: resText },
+          {
+            sender: "agent",
+            text: "Would you like me to generate a quote for this configuration?",
+            multipleChoice: true,
+            options: [
+              { label: "Yes, generate quote" },
+              { label: "No, thanks" }
+            ]
+          }
         ]);
-        setCurrentConfigStep(-1);
-        setConfigAnswers({});
+        setInput("");
+        setCurrentConfigStep(6);
         return;
       }
 }
@@ -416,6 +421,56 @@ const [configAnswers, setConfigAnswers] = useState({});
         });
     }, 100);
   };
+
+  /** Create the quote PDF and return a blob URL **/
+const createQuotePdfUrl = () =>
+  new Promise((resolve, reject) => {
+    // --- static demo data; adapt if you want real values ---
+    const pdfData = {
+      customerName: "John Doe",
+      customerAddress: "4987 Willow Creek Dr, Stonebridge, TX 76244",
+      quoteNo: "0000226",
+      quoteDate: "11‑04‑2023",
+      dueDate: "25‑04‑2023",
+      productName:productDetails.product,
+      productQty : productDetails.quantity,
+      items: [
+        { sNo:1, description: productDetails.material, unitPrice: '3200', },
+        { sNo:2, description: "3‑D Printing Service", unitPrice: 120 },
+        { sNo:2, description: "3‑D Printing Service", unitPrice: 120 }
+      ],
+
+      subtotal: 120,
+      tax: 6,
+      total: 126,
+    };
+    // --------------------------------------------------------
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    root.render(<PDFTemplate data={pdfData} />);
+
+    setTimeout(() => {
+      html2pdf()
+        .set({
+          margin: 0.5,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        })
+        .from(container)
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
+          const blobUrl = pdf.output("bloburl"); // <- returns object‑URL
+          root.unmount();
+          document.body.removeChild(container);
+          resolve(blobUrl);
+        })
+        .catch(reject);
+    }, 100);
+  });
+
 
   /**************************************/
   //B Y Prototype logic
@@ -835,52 +890,97 @@ const [configAnswers, setConfigAnswers] = useState({});
                             { key: "printSpeed", question: "Choose Print Speed:", options: [{ label: "40 mm/s" }, { label: "60 mm/s" }, { label: "80 mm/s" }] },
                           ];
 
-                          const currentKey = stepMap[currentConfigStep].key;
-                          setConfigAnswers((prev) => ({ ...prev, [currentKey]: option.label }));
-                          setMessages((prev) => [...prev, { sender: "user", text: option.label }]);
+                          console.log('STEPP '+currentConfigStep)
+                         if (currentConfigStep >= 0 && currentConfigStep < stepMap.length) {
+                                const currentKey = stepMap[currentConfigStep].key;
+                                setConfigAnswers((prev) => ({ ...prev, [currentKey]: option.label }));
+                                setMessages((prev) => [...prev, { sender: "user", text: option.label }]);
 
-                          const nextStep = currentConfigStep + 1;
+                                const nextStep = currentConfigStep + 1;
+                                console.log('Next STep '+currentConfigStep)
+                               
+                                if (nextStep < stepMap.length) {
+                                  const nextQ = stepMap[nextStep];
+                                  setMessages((prev) => [...prev, { sender: "agent", text: "...", isLoading: true }]);
+                                  setTimeout(() => {
+                                  setMessages((prev) => [
+                                    ...prev.slice(0, -1),
+                                    {
+                                      sender: "agent",
+                                      text: nextQ.question,
+                                      multipleChoice: true,
+                                      options: nextQ.options,
+                                    },
+                                  ]);
+                                  setCurrentConfigStep(nextStep);
+                                },1200);
+                                } else {
+                                  // Final step: ask for quantity via text
+                                  setMessages((prev) => [...prev, { sender: "agent", text: "...", isLoading: true }]);
+                                  setTimeout(() => {
+                                    setMessages((prev) => [
+                                    ...prev.slice(0, -1),
+                                    { sender: "agent", text: "Enter the quantity you want to order:" },
+                                  ]);
+                                  setCurrentConfigStep(6);
+                                  },1200);
+                                   // Now ready for quote step next
+                                }
+                                return;
+                              }
+                              else if (currentConfigStep === stepMap.length) {
+                            // This is the quote generation decision step
+                            setMessages((prev) => [...prev, { sender: "user", text: option.label }]);
 
-                          if (nextStep < stepMap.length) {
-                            const nextQ = stepMap[nextStep];
-                            setMessages((prev) => [
-                              ...prev,
-                              {
-                                sender: "agent",
-                                text: nextQ.question,
-                                multipleChoice: true,
-                                options: nextQ.options,
-                              },
-                            ]);
-                            setCurrentConfigStep(nextStep);
-                          } else {
-                            // Ask for Quantity as last step (text)
-                            setMessages((prev) => [
-                              ...prev,
-                              {
-                                sender: "agent",
-                                text: "Enter the quantity you want to order:",
-                              },
-                            ]);
-                            setCurrentConfigStep(5);
+                            if (option.label.toLowerCase().startsWith("yes")) {
+                              // Simulate loading
+                              setMessages((prev) => [...prev, { sender: "agent", text: "...", isLoading: true }]);
+
+                              // Create the PDF and generate a Blob URL
+                              createQuotePdfUrl().then((url) => {
+                               setTimeout(()=>{
+                                  setMessages((prev) => [
+                                  ...prev.slice(0, -1),
+                                  {
+                                    sender: "agent",
+                                    text: `Here is your quote: <a href="${url}" download="Quote.pdf" target="_blank">📄 Download PDF</a>`,
+                                  },
+                                ]);
+                                },1200)
+                                
+                              }).catch(() => {
+                                //setMessages((prev) => [...prev, { sender: "agent", text: "...", isLoading: true }]);
+                                setMessages((prev) => [
+                                  ...prev.slice(0, -1),
+                                  { sender: "agent", text: "❌ Failed to generate quote." },
+                                ]);
+                              });
+                            } else {
+                              setMessages((prev) => [
+                                ...prev,
+                                { sender: "agent", text: "Thank you for configuring your product!" },
+                              ]);
+                            }
+
+                            // Reset the state
+                            setCurrentConfigStep(-1);
+                            setConfigAnswers({});
+                            return;
                           }
+                            }
 
-                          return;
-                        }
+                            // fallback for other modules
+                            const userMsg = { sender: "user", text: option.label };
+                            const loadingMsg = { sender: "agent", text: "...", isLoading: true };
+                            setMessages((prev) => [...prev, userMsg, loadingMsg]);
 
-                        // fallback for other modules
-                        const userMsg = { sender: "user", text: option.label };
-                        const loadingMsg = { sender: "agent", text: "...", isLoading: true };
-                        setMessages((prev) => [...prev, userMsg, loadingMsg]);
-
-                        sendMessageToSession(sessionId, option.label).then((resText) => {
-                          setMessages((prev) => [
-                            ...prev.slice(0, -1),
-                            { sender: "agent", text: resText },
-                          ]);
-                        });
-                      }}
-
+                            sendMessageToSession(sessionId, option.label).then((resText) => {
+                              setMessages((prev) => [
+                                ...prev.slice(0, -1),
+                                { sender: "agent", text: resText },
+                              ]);
+                            });
+                          }}
                     />
                   ) : (
                     <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
