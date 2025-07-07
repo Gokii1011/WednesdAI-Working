@@ -56,12 +56,13 @@ function PDFTemplate({ data }) {
           <p><strong>Due date:</strong> {data.dueDate}</p>
         </div>
       </div>
-
+      <br/>
+      <div>PRODUCT NAME : {data.productName}</div>
       {/* Table */}
       <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={thStyle}>S.No</th>
+            <th style={thStyle}>S.NO</th>
             <th style={thStyle}>Description</th>
             <th style={thStyle}>Unit Price</th>
             <th style={thStyle}>Amount</th>
@@ -72,8 +73,8 @@ function PDFTemplate({ data }) {
             <tr key={idx}>
               <td style={tdStyle}>{item.sNo}</td>
               <td style={tdStyle}>{item.description}</td>
-              <td style={tdStyle}>${item.unitPrice.toFixed(2)}</td>
-              <td style={tdStyle}>${(data.quantity * item.unitPrice).toFixed(2)}</td>
+              <td style={tdStyle}>{item.unitPrice.toFixed(2)}</td>
+              <td style={tdStyle}>{(data.productQty * item.unitPrice).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
@@ -81,9 +82,9 @@ function PDFTemplate({ data }) {
 
       {/* Totals */}
       <div style={{ textAlign: 'right', marginTop: '20px', fontSize: '14px' }}>
-        <p><strong>Subtotal:</strong> ${data.subtotal.toFixed(2)}</p>
-        <p><strong>Sales Tax (5%):</strong> ${data.tax.toFixed(2)}</p>
-        <p style={{ fontSize: '16px', color: '#004d99' }}><strong>Total (USD):</strong> ${data.total.toFixed(2)}</p>
+        <p><strong>Subtotal:</strong> {data.subtotal.toFixed(2)}</p>
+        <p><strong>Sales Tax (18%):</strong> {data.tax.toFixed(2)}</p>
+        <p style={{ fontSize: '16px', color: '#004d99' }}><strong>Total (USD):</strong> {data.total.toFixed(2)}</p>
       </div>
 
       {/* Terms */}
@@ -92,9 +93,9 @@ function PDFTemplate({ data }) {
         <p>Payment is due in 14 days</p>
         <p>Please make checks payable to: Your Company Inc.</p>
       </div>
-
+      <br/>
       {/* Signature */}
-      <div style={{ marginTop: '50px', borderTop: '1px solid #ccc', width: '200px' }}>
+      <div style={{ align:'right' ,marginTop: '50px', borderTop: '1px solid #ccc', width: '200px' }}>
         <p style={{ fontSize: '12px', marginTop: '8px' }}>customer signature</p>
       </div>
     </div>

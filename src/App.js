@@ -43,27 +43,21 @@ function App() {
   const [materialType, setMaterialType] = useState([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState(null);
   const [selectedMaterialIndex, setSelectedMaterialIndex] = useState(null);
-<<<<<<< HEAD
-=======
 
   //Buttons
->>>>>>> 351da04efda17bf380b76ea65c2d5c7bb5a3542f
 const [currentConfigStep, setCurrentConfigStep] = useState(-1);
 const [configAnswers, setConfigAnswers] = useState({});
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedModuleBY, setSelectedModuleBY] = useState(null);
   const [selectedModuleCon, setSelectedModuleCon] = useState(null);
   const [selectedModuleCafe, setSelectedModuleCafe] = useState(null);
-<<<<<<< HEAD
-  var productDetails = {}
-=======
+  const productDetailsRef = useRef({});
 
   //Slack
   const [supportActive, setSupportActive] = useState(true);
   const [floorName, setFloorName] = useState('');
 
   var floor = '';
->>>>>>> 351da04efda17bf380b76ea65c2d5c7bb5a3542f
 
   useEffect(() => {
     scrollToBottom();
@@ -298,7 +292,7 @@ const [configAnswers, setConfigAnswers] = useState({});
           quantity: input.trim(),
         };
 
-        productDetails = finalAnswers;
+        productDetailsRef.current = finalAnswers;
         const summary = Object.entries(finalAnswers)
           .map(([key, val]) => `${key}: ${val}`)
           .join(", ");
@@ -464,55 +458,67 @@ const [configAnswers, setConfigAnswers] = useState({});
         });
     }, 100);
   };
-
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   /** Create the quote PDF and return a blob URL **/
-const createQuotePdfUrl = () =>
-  new Promise((resolve, reject) => {
+const createQuotePdfUrl = async () =>{
+  //new Promise((resolve, reject) => {
     // --- static demo data; adapt if you want real values ---
+
+    console.log('SESSIONS '+sessionId)
+    
+    console.log('Product Details '+JSON.stringify(productDetailsRef.current))
+    const productDetails = productDetailsRef.current;
+    let resText = await sendMessageToSession(sessionId, 'Get the Material Details of '+productDetails.material);
+    let price = 160//Number(resText);
+    const qty = Number(productDetails.quantity)
+    console.log('Material Info '+price+'  '+typeof price+'   '+typeof qty)
     const pdfData = {
       customerName: "John Doe",
       customerAddress: "4987 Willow Creek Dr, Stonebridge, TX 76244",
       quoteNo: "0000226",
       quoteDate: "11‑04‑2023",
       dueDate: "25‑04‑2023",
-      productName:productDetails.product,
-      productQty : productDetails.quantity,
+      productName: productDetails.product,
+      productQty : qty,
       items: [
-        { sNo:1, description: productDetails.material, unitPrice: '3200', },
-        { sNo:2, description: "3‑D Printing Service", unitPrice: 120 },
-        { sNo:2, description: "3‑D Printing Service", unitPrice: 120 }
+        { sNo:1, description: productDetails.material, unitPrice: price},
+        { sNo:2, description: "Machining", unitPrice: 150 },
+        { sNo:2, description: "Labor", unitPrice: 75 }
       ],
 
-      subtotal: 120,
-      tax: 6,
-      total: 126,
+      subtotal: (price + 250 +120)*qty,
+      tax: (price + 250 +120)*qty*0.18,
+      total: ((price + 250 +120)*qty) + ((price + 250 +120)*qty*0.18),
     };
+
+    console.log('PDF DATA '+JSON.stringify(pdfData))
     // --------------------------------------------------------
     const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
     root.render(<PDFTemplate data={pdfData} />);
 
-    setTimeout(() => {
-      html2pdf()
-        .set({
-          margin: 0.5,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-        })
-        .from(container)
-        .toPdf()
-        .get("pdf")
-        .then((pdf) => {
-          const blobUrl = pdf.output("bloburl"); // <- returns object‑URL
-          root.unmount();
-          document.body.removeChild(container);
-          resolve(blobUrl);
-        })
-        .catch(reject);
-    }, 100);
-  });
+    await delay(100); // allow render to complete
+
+    const pdf = await html2pdf()
+      .set({
+        margin: 0.5,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      })
+      .from(container)
+      .toPdf()
+      .get("pdf");
+
+    root.unmount();
+    document.body.removeChild(container);
+
+    const blob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(blob);
+    return blobUrl;
+
+  }//);
 
 
   /**************************************/
