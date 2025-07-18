@@ -147,7 +147,7 @@ app.post('/call-template', async (req, res) => {
   }
 });
 
-app.post('/call-flow', async (req, res) => {
+app.post('pages/api/call-flow.js', async (req, res) => {
   try {
     console.log('called');
     console.log(req.body);
