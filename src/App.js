@@ -630,7 +630,7 @@ const createQuotePdfUrl = async () =>{
   const sendSlackText = async (text) => {
     console.log("2", text);
     try {
-      const res = await fetch(`/api/call-flow`, {
+      const res = await fetch(`http://localhost:5001/call-flow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
