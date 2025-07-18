@@ -1,7 +1,8 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
-
+  console.log(req);
   const SALESFORCE_ACCESS_TOKEN = process.env.SALESFORCE_ACCESS_TOKEN;
+  console.log(SALESFORCE_ACCESS_TOKEN)
   const BASE_URL = 'https://in1750257229223.my.salesforce.com';
 
   try {
